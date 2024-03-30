@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>로그인</title>
+        <style>
+            html { height: 100%; margin: 0; display: flex; justify-content: center; align-items: center; background-color: rgb(206,212,218); }
+
+            main { padding: 15px; background-color: white; border-radius: 8px; }
+
+            h1 { font-size: 50px; padding-left:25%; margin-top: 0; }
+
+            input { width: 300px; height: 30px; border-style: solid; border-width: 1px; border-radius: 8px; font-size: 15px;}
+            #sign_in { width: 307.2px; height: 35.2px; margin-top:20px; background-color:rgb(65, 105, 225); color: white; border-style: none; }
+
+            label { font-size: 13px; opacity: 0.8; visibility: hidden; }
+            .message { float: right; color: red; }
+
+            nav { margin-top: 20px; }
+
+            a { text-decoration: none; color:black; font-size: 13px; }
+            #password_reset { margin-left: 154px; }
+        </style>       
+    </head>
+
+    <body>
+        <main>
+            <h1>로그인</h1>
+
+            <form id="loginForm">
+                <label for="userID", id="userIdLabel">이메일</label><br>
+                <input id="userID", name="userID", type="email", placeholder="이메일", onfocus="onFocusHandler(this, userIdLabel, userIdMessage)", onblur="onBlurHandler(this, userIdLabel, userIdMessage)"><br>
+                <label for="userID", class="message", id="userIdMessage">message</label><br>
+
+                <label for="password", id="passwordLabel">비밀번호</label><br>
+                <input id="password", name="password", type="password", placeholder="비밀번호", onfocus="onFocusHandler(this, passwordLabel, passwordMessage)", onblur="onBlurHandler(this, passwordLabel, passwordMessage)"><br>
+                <label for="password", class="message", id="passwordMessage">message</label><br>
+
+                <input type="submit" value="확인", id="sign_in"><br>
+            </form>
+
+            <nav>
+                <a href="./sign_up.html", id="sign_up">회원가입</a>
+                <a href="./password_reset.html", id="password_reset">비밀번호 재설정</a>
+            </nav>
+        </main>
+    </body>
+
+    <script>    
+        var valid = [false, false] //id와 pw가 유효한지(submit 가능한지) 표시, valid[0] : id 유효성 여부, valid[1] : pw 유효성 여부
+
+        function elementIndex(element){ //element의 인덱스 (id : 0, pw : 1)
+            if (element.id === "userID")
+                return 0;
+            else if (element.id === "password")
+                return 1;
+        }
+
+        function isValidEmail(email){ //이메일 형식 유효성 체크
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; //이메일 형식
+            return emailRegex.test(email);
+        }
+
+        function isValidPassword(password){ //비밀번호 형식 유효성 체크
+            if (password === '')
+                return false     //일단 공백인 경우에만 false 반환, 추후 비밀번호 규칙이 정해지는 경우 수정
+            return true;
+        } 
+
+        function onFocusHandler(element, label, message){ //id 또는 pw 입력 칸이 focus된 경우
+            element.placeholder = "";
+            label.style.visibility = "visible";
+            message.style.visibility = "hidden";
+        }
+
+        function onBlurHandler(element, label, message){ //id 또는 pw 입력 칸이 focus 해제된 경우 -> 유효성 체크
+            if(element.value === ''){ //입력값이 공백일 때
+                element.style.borderColor = "red";
+
+                element.placeholder = label.textContent;
+                label.style.visibility = "hidden";   //label 가리기
+
+                //message.textContent = label.textContent + " 값을 입력하세요";
+                if (element.id === "userID")
+                    message.textContent = "이메일을 입력하세요";
+                else if (element.id === "password")
+                    message.textContent = "비밀번호를 입력하세요";
+                message.style.visibility = "visible";  //message 보여주기
+
+                valid[elementIndex(element)] = false;              
+            }
+            else if(element.id === "userID" && !isValidEmail(element.value)){
+                element.style.borderColor = "red";
+                message.textContent = "이메일 형식이 올바르지 않습니다";
+                message.style.visibility = "visible";
+                valid[0] = false;
+            }
+            else if(element.id === "password" && !isValidPassword(element.value)){
+                element.style.borderColor = "red";
+                message.textContent = "비밀번호 형식이 올바르지 않습니다";
+                message.style.visibility = "visible";
+                valid[1] = false;
+            }
+            else{  //id 또는 pw가 유효성 만족
+                element.style.borderColor = "green";
+                message.style.visibility = "hidden";
+
+                valid[elementIndex(element)] = true; 
+            }
+        }
+
+        var submitBtn = document.getElementById("sign_in");          //확인 버튼 위에 마우스 위치시킬때 색 바꾸기
+        submitBtn.addEventListener("mouseover", function(event){
+            submitBtn.style.backgroundColor = "rgb(52, 82, 179)";
+        });
+        submitBtn.addEventListener("mouseout", function(event){
+            submitBtn.style.backgroundColor = "rgb(65, 105, 225)";
+        });
+
+        var form = document.getElementById("loginForm");       
+        form.addEventListener("submit", function(event){ //submit 이벤트 처리
+            //event.preventDefault();
+
+            document.getElementById("userID").onblur();
+            document.getElementById("password").onblur();
+            
+            //if (isValidEmail(document.getElementById("userID").value) && isValidPw(document.getElementById("password").value)){
+            if (valid[0] && valid[1]){
+                //alert("submit");
+            }
+            else{
+                //alert("submit denied");
+                event.preventDefault();
+            }
+        }); 
+
+        /*
+        function onLoadHandler(){
+            var userID = document.getElementById("userID");
+            var userIdLabel = document.getElementById("userIdLabel");
+            var userIdMessage = document.getElementById("userIdMessage");
+
+            var password = document.getElementById("password");
+            var passwordLabel = document.getElementById("passwordLabel");
+            var passwordMessage = document.getElementById("passwordMessage");
+            
+            if ("{{ id }}" !== 'None'){
+                userID.onfocus();
+                userID.value = "{{ id }}";
+                userID.onblur();
+            }
+            if ("{{ idMsg }}" !== 'None'){
+                userID.style.borderColor = "red";
+                userIdMessage.textContent = "{{ idMsg }}";
+                userIdMessage.style.visibility = "visible";
+            }
+            if ("{{ pw }}" !== 'None'){
+                password.onfocus();
+                password.value = "{{ pw }}";
+                password.onblur();
+            }
+            if ("{{ pwMsg }}" !== 'None'){
+                password.style.borderColor = "red";
+                passwordMessage.textContent = "{{ pwMsg }}";
+                passwordMessage.style.visibility = "visible";
+            }
+        }*/
+    </script>
+</html>
