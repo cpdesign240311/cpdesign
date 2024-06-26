@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Share</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'webapp/css/dialog.css' %}">
+  </head>
+  <body>
+    <header style="text-align : center;"><h2 id="title">제목</h2></header>
+    <button id="quill2pdf" class=grpBtn>PDF로 다운받기</button>
+    <hr>
+
+    <section id="content">
+      <div id="editor"></div>
+      <input type="hidden" id="doc_name" value='{{doc_name}}' style="display: none;">
+      <input type="hidden" id="writable" value="{{writable}}" style="display: none;">
+      <script src="{% static 'codeshare/js/sendMessage.js' %}"></script>
+      <script src="{% static 'codeshare/js/scriptloader.js' %}"></script>
+      <script> 
+        document.getElementById('title').innerText = new String('{{doc_name}}').split('-')[1];
+        loadScript("http://"+window.location.hostname+":5173/textEditor.js"); 
+      </script>
+    </section>
+    
+    <dialog id="save_as_pdf">
+      <form method="dialog" class="grpForm">
+        <label for="fileName" class="grpTxt">파일 이름</label><br>
+        <input type="text" id="fileName" name="fileName" placeholder="파일 이름"><br>
+        <button value="confirm" class="grpBtn checkBtn">저장</button><br>
+        <button value="cancel" class="grpBtn checkBtn">취소</button>
+      </form>
+    </dialog>
+  </body>
+</html>

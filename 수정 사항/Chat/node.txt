@@ -1,0 +1,18 @@
+#node 초기화
+
+0. chat으로 이동
+
+1. nodeJS 초기 설정
+npm init -y 
+npm install express --save
+npm install socket.io --save
+
+2. package.json ->scripts 다음 추가
+
+    "start" : "node static/js/app.js",
+
+3. 서버 시작
+->npm start
+
+listen 포트만 지정하면 ip는 기본 0.0.0.0으로
+모든 네트워크 주소를 받아들일 수 있다고 합니다.

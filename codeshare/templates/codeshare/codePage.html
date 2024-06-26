@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code</title>
+    <style>
+        #editor{ font-size: 18px; font-weight: bold; }
+        #langtypeList{ width : 100px; height : 30px; font-size: 15px; }
+    </style>
+</head>
+<body>
+    <header style="text-align : center; margin : 0% 0% 10px 0%"><h2 id="title">제목</h2></header>
+    <select id="langtypeList"><!--목록--></select>
+    <hr>
+    <section id="content">
+        <div id="editor"></div>
+        <input type="hidden" id="doc_name" value="{{doc_name}}">
+        <input type="hidden" id="writable" value="{{writable}}">
+        <script src="{% static 'codeshare/js/scriptloader.js' %}"></script>
+        <script> 
+            document.getElementById('title').innerText = new String('{{doc_name}}').split('-')[1];
+            loadScript("http://"+window.location.hostname+":5173/codeEditor.js"); 
+        </script>
+    </section>
+</body>
+</html>

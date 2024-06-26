@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="google" content="notranslate">
+    <title>채팅</title>
+    <link rel="stylesheet" href="/css/chatApp.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/chatApp.js"></script>
+  </head>
+  <body>
+    <div id="main">
+      <p id="chat" style="word-wrap: break-word; word-break:break-word; text-align: right;"></p>
+    </div>
+    <div>
+      <input type="text" id="chatText" placeholder="메시지를 입력해주세요.." style="width: 80%;">
+      <button style="width: 15%; margin-top: 0px;" onclick="send()">전송</button>
+    </div>
+  </body>
+</html>

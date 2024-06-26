@@ -1,0 +1,9 @@
+body {
+  background: white;
+}
+
+.ql-editor {
+  min-height: 300px;
+  overflow-y: auto;
+  resize: vertical;
+}

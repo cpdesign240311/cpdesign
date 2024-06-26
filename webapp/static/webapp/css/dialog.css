@@ -1,0 +1,70 @@
+dialog {
+  border: 2px solid #97cba9;
+  border-radius: 5px;
+}
+
+/* 대화상자 뒤쪽 배경 처리 */
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(1px);
+}
+
+/* 폼 구조 */
+.grpForm{
+  display : block; justify-content: center;
+  width : 400px; height : 150px;
+}
+
+#accessForm{
+  display : block; justify-content: center;
+  width : 400px; height : 120px;
+}
+
+#joinForm{
+  display : block; justify-content: center;
+  width : 400px; height : 100px;
+}
+
+/* 그룹 버튼 */ 
+.grpBtn{
+  color: #0A3711;
+  border: 2px solid #97cba9;
+  border-radius: 5px;
+  background: none;
+}
+.grpBtn:hover {
+  background-color: #97cba9;
+  cursor: pointer;
+}
+
+/* 폼 텍스트 폰트 */
+.grpTxt{
+  color: #0A3711; font-weight: bold;
+  font-size :small;
+}
+
+/* 확인-취소 버튼 */
+.checkBtn{
+  width : 100%;
+  margin : 5px 0px 5px 0px;
+}
+
+/* input 관련 */
+input[type="text"], input[type="password"]{
+  outline: 3px solid #97cba9;
+  margin : 0px 0px 5px 0px; border-width: 0;
+  border-radius: 3px;
+  width : 100%;
+}
+
+input[type="text"]:focus::placeholder, input[type="password"]:focus::placeholder{
+  color:transparent;
+}
+
+input[type="radio"]{
+  outline: None;
+  margin : 0px 0px 5px 0px;
+  width : 3%;
+  border-style:none;
+  text-align : center;
+}

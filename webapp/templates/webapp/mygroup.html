@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{% static 'webapp/css/dialog.css' %}">
+<title>Group Page</title>
+<style>
+    /* 간단한 스타일링 */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    th, td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+</head>
+<body>
+    <!--onclick="addPost()", onclick="deletePost()" -->
+    <button id="grpAddBtn" class="grpBtn">그룹 추가</button>
+    <button id="grpDelBtn" class="grpBtn">그룹 삭제</button>
+
+    <!--prompt -> dialog로 방식 변경-->
+    <dialog id="grpAddDialog">
+        <form method="dialog" class="grpForm">
+            <label for="grpName" class="grpTxt">그룹 이름</label><br>
+            <input autoComplete="off" type="text" id="grpName" name="grpName" placeholder="그룹 이름"><br>
+            <label for="grpAddPwd" class="grpTxt">비밀번호</label><br>
+            <input autoComplete="off" type="password" id="grpAddPwd" minlength="4" maxlength="4" name="grpAddPwd" placeholder="비밀번호"><br>
+            <button value="confirm" class="grpBtn checkBtn">확인</button><br>
+            <button value="cancel" class="grpBtn checkBtn">취소</button>
+        </form>
+    </dialog>
+
+    <dialog id="grpDelDialog">
+        <form method="dialog" class="grpForm">
+            <label for="grpId" class="grpTxt">그룹 ID</label><br>
+            <input autoComplete="off" type="text" id="grpId" name="grpId" placeholder="그룹 ID"><br>
+            <label for="grpDelPwd" class="grpTxt">비밀번호</label><br>
+            <input autoComplete="off" type="password" id="grpDelPwd" minlength="4" maxlength="4" name="grpDelPwd" placeholder="비밀번호"><br>
+
+            <button value="confirm" class="grpBtn checkBtn">확인</button><br>
+            <button value="cancel" class="grpBtn checkBtn">취소</button>
+        </form>
+    </dialog>
+
+    <!--처리 결과에 대한 Dialog 메시지-->
+    <dialog id="msgDialog">
+        <div style="width: 15rem; height: 10rem;">
+            <p id="msg"></p>
+        </div>
+    </dialog>
+
+    <!--그룹 접근 비밀번호 입력 Dialog-->
+    <dialog id="grpAccessDialog">
+        <form method="dialog" id="accessForm">
+            <label for="grpCheckPwd" class="grpTxt">그룹 비밀번호 확인</label><br>
+            <input autoComplete="off" type="password" id="grpCheckPwd" minlength="4" maxlength="4" name="grpCheckPwd" placeholder="비밀번호"><br>
+    
+            <button value="confirm" class="grpBtn checkBtn">이동</button><br>
+            <button value="cancel" class="grpBtn checkBtn">취소</button>
+        </form>
+    </dialog>
+    
+    <hr>
+    <form id="mygroupList">
+        <table>
+            <thead>
+                <tr>
+                    <th>그룹 id</th>
+                    <th>그룹 이름</th>
+                    <th>생성자</th>
+                    <th>생성일</th>
+                </tr>
+            </thead>
+            <tbody id="mygroupBody"> 
+                <!--innerHTML 보안이슈 -> 코드 리팩토링-->
+                {% for grp in grp_info %}
+                    <tr>
+                        <td>{{ grp.group_id }}</td>
+                        <td><a href="javascript:void(0);" onclick="accessGroup(this); return false;">{{ grp.title }}</a></td>
+                        <td>{{ grp.owner }}</td>
+                        <td>{{ grp.created_date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+
+    <script src="{% static 'webapp/js/domain.js' %}"></script>
+    <script src="{% static 'webapp/js/cookie.js' %}"></script>
+    <script src="{% static 'codeshare/js/sendMessage.js' %}"></script>
+    
+    <script>
+        //아래 기능을 게시판에 대한 DB에서 가져오거나, 그룹으로 들어가는 연결처로 써야할 것 같습니다.
+        //group 추가 - 해당 로직은 dialog버튼으로 추가 시 동작하도록 수정
+        function addGroup(){
+            let title = document.getElementById("grpName").value;
+            let password = document.getElementById("grpAddPwd").value;
+            const post = { title, password };
+
+            fetch("{% url 'create_group' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') // Include CSRF token if needed
+                },
+                body: JSON.stringify(post)
+            })
+            .then(response => {
+                if (response.ok) {
+                    showMsg("그룹이 생성되었습니다.");
+                    location.reload();
+                } else {
+                    showMsg("그룹 생성에 실패했습니다.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        //group 삭제
+        function delGroup(){
+            let grpId = document.getElementById("grpId").value;
+            let password = document.getElementById("grpDelPwd").value;
+            
+            const post = { grpId, password };
+
+            fetch("{% url 'delete_group' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') // Include CSRF token if needed
+                },
+                body: JSON.stringify(post)
+            })
+            .then(response => {
+                if (response.ok) {
+                    showMsg("그룹이 삭제되었습니다.");
+                    location.reload();
+                } else {
+                    showMsg("그룹 삭제에 실패했습니다.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        //비밀번호 dialog 생성
+        function accessGroup(e){
+            //그룹 이동 대화상자
+            let grpAccessDialog = document.getElementById("grpAccessDialog");
+            let title_node = e.parentNode; //title 노드 접근
+            let id_node = title_node.previousElementSibling; //group ID 노드 접근
+            const group_id = parseInt(id_node.innerHTML,10); //group ID 추출
+            //group 이동 대화상자 이벤트 등록
+            grpAccessDialog.addEventListener('close', (event) => {
+                if (grpAccessDialog.returnValue === 'confirm') {
+                    let password = document.getElementById("grpCheckPwd").value;
+                    const post = { group_id, password };
+                    //비밀번호 확인
+                    fetch("{% url 'access_group' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') // Include CSRF token if needed
+                        },
+                        body: JSON.stringify(post)
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            showMsg("그룹으로 이동합니다.");
+                            entryGroup("{% url 'codeshare_main' %}",group_id,password);
+                        } else {
+                            showMsg("비밀번호가 다릅니다.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+                document.getElementById("grpCheckPwd").value=""
+                event.stopImmediatePropagation(); //이벤트 전파 방지
+            });
+            grpAccessDialog.showModal();
+        }
+    </script>
+    
+    
+    <!--dialog 로직-->
+    <script src="{% static 'webapp/js/dialog.js' %}"></script>
+    
+    <script>
+        window.addEventListener("load",()=>{
+            parent.postMessage({type : "method" ,method : 'dconn_websoc', param : "none"},"*");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+/*css file for sign_up.html*/
+
+body { 
+    width: 800px; 
+    height: 400px; 
+    display: flex; 
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: center;
+    border-radius: 8px;
+    background-color: white; 
+}  
+
+form, div { 
+    margin:100px; 
+    margin-right: 50px; 
+    display: none;
+}
+#f0 { 
+    display: block; 
+}
+    
+.submit_btn {    
+    width: 80px; 
+    margin-top: 30px; 
+    float: right;
+}
+
+a { 
+    float: right; 
+    color:rgb(65, 105, 225);
+}
+.cancel {  
+    margin-left: 170px; 
+    margin-top: 33px; 
+    float: left; 
+    color:rgb(65, 105, 225); 
+}

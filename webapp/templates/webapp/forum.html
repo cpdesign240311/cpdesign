@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>그룹 목록</title>
+<link rel="stylesheet" type="text/css" href="{% static 'webapp/css/forum.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'webapp/css/dialog.css' %}">
+<script src="{% static 'webapp/js/cookie.js' %}"></script>
+<script src="{% static 'webapp/js/domain.js' %}"></script>
+</head>
+<body>
+    <header id="search">
+        <!--그룹 검색-->
+        <input type="text" id="grpSearch" name="grp_keyword" placeholder="그룹명 검색" onkeypress="grp_search(event)" value={{ grp_keyword }}></input>
+        <button id="grpSearchBtn" onclick="grp_search(event)"><img src="{% static 'webapp/icons/search_icon.png' %}"></button>
+    </header>
+    <hr>
+    <section id="groups">
+        {% for grp in grp_info %}
+            <button onclick="joinBtnEvent(this)">
+                <aside>No.<span>{{ grp.group_id }}</span></aside>
+                <article>{{ grp.title }}</article>
+                <footer>owner : {{ grp.owner }}</footer>
+            </button>
+        {% endfor %}
+        <!--그룹 목록 로드-->
+    </section>
+    <nav id="nextPages">
+        <!--다음 페이지 링크-->
+        <p id="linkSet">
+            <a id="head" class="sementicLink" style="color:black;" href="javascript:void(0);" onclick="moveToHead()">&lt;&lt;처음</a>
+            <a id="previous" class="sementicLink" style="color:black;" href="javascript:void(0);" onclick="moveToPre('{{page_num}}')">&lt;이전</a>
+            <!--여기부터 링크-->
+            <a id="next" class="sementicLink" style="color:black;" href="javascript:void(0);" onclick="moveToNext('{{page_num}}')">다음&gt;</a>
+            <a id="tail" class="sementicLink" style="color:black;" href="javascript:void(0);" onclick="moveToTail()">끝&gt;&gt;</a>
+        </p>
+    </nav>
+
+    <!--그룹 참가 대화상자-->
+    <dialog id="grpJoinDialog">
+        <form method="dialog" id="joinForm">
+            <label class="grpTxt">그룹에 참가하시겠습니까?</label><br>
+            <button value="confirm" class="grpBtn checkBtn">참가 요청</button><br>
+            <button value="cancel" class="grpBtn checkBtn">취소</button>
+        </form>
+    </dialog>
+    
+    <script src="{% static 'webapp/js/forum.js' %}"></script>
+    <script>
+        //페이지 로드
+        function loadPages(){
+            //그룹 목록 로드
+            const grpJoinDialog = document.getElementById("grpJoinDialog");
+            const groups = document.getElementById("groups");
+            
+            //그룹 참가 요청 대화상자 이벤트 등록
+            grpJoinDialog.addEventListener('close',(event)=>{
+                let joinForm = document.getElementById("joinForm");
+                let grpId = document.getElementById("grpId");
+                if (grpJoinDialog.returnValue === 'confirm') {
+                    requestJoinGroup(grpId.value);
+                }
+                joinForm.removeChild(grpId);
+            });
+
+            //하단 페이지 이동 링크
+            const linkSet = document.getElementById("linkSet");
+            let pNode = document.getElementById("next");
+            if('{{isExistGrp}}'=='true'){
+                for(let i={{page_count}};i>0;i--){
+                    var aNode = document.createElement("a");
+                    aNode.href = "javascript:void(0);"
+                    aNode.innerHTML = i+" ";
+                    aNode.addEventListener('click',()=>{
+                        redirectPage(parseInt(i));   
+                    });
+                    if(parseInt('{{page_num}}')==parseInt(i))
+                        aNode.style.fontWeight="bold";
+                    linkSet.insertBefore(aNode,pNode);
+                    pNode = aNode;
+                }
+            }
+            parent.postMessage({type : "method" ,method : 'dconn_websoc', param : "none"},"*");
+        }
+        function joinBtnEvent(target){
+            let grpJoinDialog = document.getElementById("grpJoinDialog");
+            //버튼의 자식노드가 선택된 경우 
+            let button = target;
+            while(button.tagName!="BUTTON") //-> button 찾을 때까지 탐색
+                button = button.parentElement;
+            let group_id=button.firstElementChild.firstElementChild.innerHTML;
+            //폼에 추가
+            let joinForm = document.getElementById("joinForm");
+            //버튼 안의 group_id 가져오기
+            let grpId = document.createElement("input");
+            grpId.setAttribute("type","hidden");
+            grpId.setAttribute("id","grpId");
+            grpId.setAttribute("value",group_id);
+            joinForm.appendChild(grpId);
+            grpJoinDialog.showModal();
+        }
+        window.onload = loadPages;
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <meta name="google" content="notranslate">
+    <link rel="stylesheet" type="text/css" href="{% static 'webapp/css/home.css' %}">
+    <!--iframe에 대한 onload 이벤트를 위해 Jqeury를 사용합니다-->
+    <!--html 5 문법에서는 부모에서 자식 이벤트 호출하려면 postMessage만 지원합니다-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="{% static 'webapp/js/receiveMessage.js' %}"></script>
+    <script src="{% static 'webapp/js/domain.js' %}"></script>
+    <script src="{% static 'webapp/js/cookie.js' %}"></script>
+    <script src="{% static 'webapp/js/websocket.js' %}"></script>
+    <script src="{% static 'webapp/js/gptpage.js' %}"></script>
+    <script src="{% static 'webapp/js/chatting.js' %}"></script>
+    <script src="{% static 'webapp/js/docList.js' %}"></script>
+    <script src="{% static 'webapp/js/home.js' %}"></script>
+</head>
+<body>
+    <nav>
+        <div class="menu-btn">
+            <hr class="line line--1">
+            <hr class="line line--2">
+            <hr class="line line--3">
+        </div>
+        <br>
+        <!--chatting-->
+        <a id="chatBtn" target="_blank" onclick="openChattingWindow()">
+            <img src="{% static 'webapp/icons/chatting.png' %}" alt="Chat" id="chatImg">
+        </a>
+        <!-- 여기에 DB에서 로그인 정보 받고 입력 -->
+        <div class="nav-links">
+            <div class="link">
+                <br>
+                <hr>
+                <!-- 여기에 DB에서 로그인 정보 받고 입력 -->
+                <p id="loginInform" style="text-align: center; background-color: white; border-radius: 10px;">
+                    <b>{{ username }}</b>님<br><b>[{{ email }}]<br>환영합니다.</b>
+                </p>
+                <hr><hr> 
+                <ul id="dfLink">
+                    <li><a id="forumLink" href="javascript:void(0);">포럼</a></li>
+                    <hr>
+                    <li><a id="mygroupLink" href="javascript:void(0);">내 그룹</a></li>
+                </ul>
+                <hr><hr>
+                <ul id="doc_list">
+                    <!--loadList script-->
+                </ul>
+        
+                <!--chat gpt 채팅 버튼-->
+                <a href="/gpt/chat" target="_blank" id="chatGptBtn" onclick="openChatGptWindow(event, this.href)"><img src="{% static 'webapp/icons/openAI_icon.png' %}" alt="chat gpt"></a>
+        
+                <!--로그아웃-->
+                <form id="signOut" action="{% url 'signOut' %}" method="POST">
+                    {% csrf_token %}
+                    <button id="signOutBtn" type="submit" onclick="closeChatGptWindow()">로그아웃</button>
+                </form>
+        </div>
+    </div>
+    </nav>
+    
+    <iframe src="{% if page %}{% url 'mygroup' %}{% else %}{% url 'forum' %}{% endif %}" 
+        scrolling="auto" name="child" id="mainFrame"></iframe>
+    
+    <script src="{% static 'webapp/js/docList.js' %}"></script>
+    <script src="{% static 'webapp/js/toolbar.js' %}"></script>
+    <script>
+        const userName = "{{username}}";
+        const userEmail = "{{email}}";
+        //toolbar UI control
+        let menuBtn = document.querySelector('.menu-btn');
+        window.addEventListener("load",toolBarLoadEvent);
+        menuBtn.addEventListener('click',toolBarClickEvent);
+        window.addEventListener("keydown",toolBarKeyEvent);
+
+        //iframe 변경 감지
+        $("#mainFrame").on("load",()=>{
+            getDocList();
+            $(document.getElementById("mainFrame").contentWindow).on("keydown",toolBarKeyEvent);
+        });
+
+        //iframe으로부터 받은 메시지 처리
+        window.addEventListener('message',msgProcessingEvent);
+        //포럼, 내그룹 이동
+        window.addEventListener("load",linkingEvent);
+    </script>
+</body>
+</html>

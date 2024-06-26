@@ -1,0 +1,67 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>로그인</title>
+        <meta name="login" content="login(sign in) page for LCD project">
+        
+        <!-- link css file -->
+        <link rel="stylesheet" type="text/css" href="{% static 'login/css/common.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'login/css/login.css' %}">
+        
+        <!-- link javascript file -->
+        <script src="{% static 'login/javascript/checkValidity.js' %}"></script>
+        <script src="{% static 'login/javascript/eventHandler.js' %}"></script>
+
+        <script>       
+            //context 데이터 읽어서 변수로 저장       
+            var form_num = {{ form_num }}; //현재 보여주는 form 번호
+
+            try{
+                var decodedInput = '{{ input }}'.replace(/&#x27;/g, '"'); //input 파싱
+                var input = JSON.parse(decodedInput); //입력 칸에 입력된 데이터
+            } catch(e){
+                var input = "none";
+            }
+
+            try{
+                var decodedMessage = '{{ messages }}'.replace(/&#x27;/g, '"'); //messages 파싱
+                var messages = JSON.parse(decodedMessage); //각 입력 칸에 대해 출력할 메시지
+            } catch(e){
+                var messages = "none";
+            }
+        </script>
+    </head>
+
+    <body>
+        <main>
+            <h1>로그인</h1>
+            <form id="f0" class="f" action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                <!-- userID(email) field -->
+                <label for="userID" id="userIDLabel">이메일</label><br>
+                <input type="email" id="userID" name="userID" placeholder="이메일"><br>
+                <label for="userID" id="userIDMessage" class="message">message</label><br>
+
+                <!-- password field -->
+                <label for="password" id="passwordLabel">비밀번호</label><br>
+                <input type="password" id="password" name="password" placeholder="비밀번호"><br>
+                <label for="password" id="passwordMessage" class="message">message</label><br>
+
+                <!-- submit button -->
+                <input type="submit" id="sign_in" class="submit_btn" value="확인"><br>
+            </form>
+            
+            <nav>
+                <!-- hyperlink for sign up, reset password -->
+                <a href="./sign_up" id="sign_up">회원가입</a>
+                <a href="./reset_password" id="password_reset">비밀번호 재설정</a>
+            </nav>
+        </main>
+
+        <script src="{% static 'login/javascript/login.js' %}"></script>
+    </body>
+</html>

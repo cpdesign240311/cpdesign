@@ -1,0 +1,62 @@
+html,body{ width : 100%; height : 100%; }
+body { margin: 0; padding: 0; }
+
+/* 검색부 */
+header{ 
+    width : 100%; 
+    height : 5%; 
+    display: flex;
+    justify-content: space-between;
+}
+#grpSearch{
+    height: 100%;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    font-size: 17px;
+}
+#grpSearchBtn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+/* 그룹 목록 */
+section{ width : 100%; height : 80%; }
+section>button{
+    float : left; width : 40%; height : 18%;
+    margin : 2% 2% 0% 6%; /* 상 우 하 좌*/
+    color: #0A3711; border: 2px solid #97cba9;
+    border-radius: 5px; background: none;
+}
+section>button:hover{
+    background-color: #97cba9;
+    cursor: pointer;
+}
+
+/* 그룹 */
+/* group number */
+aside{
+    width : 100%; height : 25%; font-size: small;
+    font-weight: bold; text-align: left;
+}
+
+/* 그룹 이름 */
+article{
+    width : 100%; height : 50%; 
+    font-size: x-large; text-align: center;
+}
+
+#linkSet>a{ text-decoration: none; color : green; }
+.sementicLink:visited{ color : black; }
+
+/* 소유자 */
+footer{
+    width : 100%; height : 25%; font-weight: bold; 
+    text-align: right; font-size: small;
+}
+
+/* 이동 링크 */
+nav{ width : 100%; height : 8%; 
+    margin: 0 auto; text-align: center; 
+}

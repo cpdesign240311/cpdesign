@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'codeshare/css/defaultPage.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'webapp/css/dialog.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'codeshare/css/dialog.css' %}">
+    <script src="{% static 'webapp/js/cookie.js' %}"></script>
+    <script src="{% static 'webapp/js/domain.js' %}"></script>
+    <title>Group Manager</title>
+</head>
+<body>
+    <header><h3>Group Manager</h3></header>
+    {% if writable %}
+        <button id="docAddBtn" class="grpBtn">문서 생성</button>
+    {% endif %}
+    {% if grp_owner %}
+        <button id="docDelBtn" class="grpBtn">문서 삭제</button>
+    {% endif %}
+    <button id="memListBtn" class="grpBtn">접속자 목록</button>
+    
+    {% if not writable %}
+        <label>[Readonly MODE] : Code&#38Text</label>
+    {% endif %}
+
+    {% if grp_owner %} <!--그룹 소유자일 경우 버튼 추가-->
+        <button id="memPermitBtn" class="grpBtn">멤버 권한</button>
+        <button id="memAcceptBtn" class="grpBtn">참가 요청자 목록</button>
+    {% endif %}
+
+    <!--문서 생성-->
+    <dialog id="docAddDialog">
+        <form method="dialog" class="grpForm">
+            <label for="docAddName" class="grpTxt">문서 이름</label><br>
+            <input type="text" id="docAddName" name="docAddName" placeholder="문서 이름"><br>
+            <label for="docType" class="grpTxt">문서 종류</label><br>
+            <input type='radio' id="codeType" name='doc_type' checked="checked" value='code' />
+            <label style="font-size:12px; text-align : center;">코드</label>
+            <input type='radio' name='doc_type' value='text' />
+            <label style="font-size:12px; text-align : center;">텍스트</label>
+            <button value="confirm" class="grpBtn checkBtn">생성</button><br>
+            <button value="cancel" class="grpBtn checkBtn">취소</button>
+        </form>
+    </dialog>
+
+    <!--문서 삭제-->
+    <dialog id="docDelDialog">
+        <form method="dialog" class="grpForm" style="height:120px;">
+            <label for="docDelName" class="grpTxt">문서 이름</label><br>
+            <input type="text" id="docDelName" name="docDelName" placeholder="문서 이름"><br>
+            <button value="confirm" class="grpBtn checkBtn">삭제</button><br>
+            <button value="cancel" class="grpBtn checkBtn">취소</button>
+        </form>
+    </dialog>
+
+    <!--접속자 목록 표기-->
+    <dialog id="memListDialog">
+        <section id="memListForm">
+            <section id="currMemList"><!--접속자 목록--></section>
+            <aside class="exitList">
+                <button value="cancel" onclick="closeMemListDialog()" class="cancel grpBtn checkBtn">확인</button>
+            </aside>
+        </section>
+    </dialog>
+
+    <!--############그룹 소유주자 옵션############-->
+    {% if grp_owner %}
+        <!--멤버 권한 관리-->
+        <dialog id="memPermitDialog">
+            <form id="memPermitForm" method="dialog">
+                <section id="memList"> 
+                    <!--멤버 목록--> 
+                    {% for member in memberList %}
+                        <section class="member">{{member.user_id}}</section>
+                        {% if member.writable %}
+                            <p class="writable"><input type="checkbox" name="writable" checked>쓰기 권한<div>
+                        {% else %}
+                            <p class="writable"><input type="checkbox" name="writable">쓰기 권한<div>
+                        {% endif %}
+                        <p class="ban"><input type="checkbox" name="ban">강퇴</p>
+                    {% endfor %}
+                </section><br>
+                <aside class="exitList">
+                    <button value="confirm" class="grpBtn checkBtn">적용</button><br>
+                    <button value="cancel" class="grpBtn checkBtn">취소</button>
+                </aside>
+            </form>    
+        </dialog>
+
+        <!--멤버 승인-->
+        <dialog id="memAcceptDialog">
+            <section id="memAcceptForm">
+                <section id="reqList"> 
+                    {% for req in join_requests %} <!--요청 목록-->
+                        <section class="requester">{{req.user_id}}</section>
+                        <aside class="reqDate">{{ req.request_date }}</aside>
+                        <button class="accept grpBtn checkBtn" onclick="acceptMember(this,'accept')" value="accept">승인</button>
+                        <button class="reject grpBtn checkBtn" onclick="acceptMember(this,'reject')" value="reject">거부</button>
+                    {% endfor %}
+                </section><br>
+                <aside class="exitList">
+                    <button value="cancel" onclick="closeMemAcceptDialog()" class="cancel grpBtn checkBtn">닫기</button>
+                </aside>
+            </section>
+        </dialog>
+    {% endif %}
+    
+    <!--메시지 dialog-->
+    <dialog id="msgDialog">
+        <div style="width: 15rem; height: 10rem;">
+            <p id="msg"></p>
+        </div>
+    </dialog>
+
+    <script src="{% static 'codeshare/js/sendMessage.js' %}"></script>
+    <script src="{% static 'codeshare/js/dialog.js' %}"></script>
+    <script src="{% static 'codeshare/js/scriptloader.js' %}"></script>
+    <script>
+        {% if isRedirect %}
+            window.addEventListener('load',kickOut);
+        {% endif %}
+    </script>
+    <hr>
+    <section id="content">
+        <div contenteditable="true" id="editor"></div>
+        <input type="hidden" id="group_id" value='{{group_id}}'>
+        <input type="hidden" id="doc_name" value='{{doc_name}}'>
+        <input type="hidden" id="writable" value="{{writable}}">
+        <script> loadScript("http://"+window.location.hostname+":5173/defaultEditor.js"); </script>
+    </section>
+</body>
+</html>

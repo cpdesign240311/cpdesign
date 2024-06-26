@@ -1,0 +1,40 @@
+user 테이블 수정사항
+ - email VARCHAR(100) -> VARCHAR(320)
+ - password CHAR(100) -> CHAR(81)
+
+webapp_document, webapp_permission추가
+
+CREATE TABLE webapp_document(
+ 	doc_id CHAR(36), --문서 생성 시 무작위 uuid 부여
+ 	doc_password CHAR(81), --문서 비밀번호, (pw + salt)의 해시값 + salt ,비밀번호를 설정하지 않는 경우 NULL
+	title VARCHAR(100) NOT NULL, --문서 제목
+ 	owner_id VARCHAR(320), --문서를 생성한 사용자 id(email)
+ 	created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, --문서 생성 날짜
+ 	modified_date TIMESTAMP DEFAULT NULL, --마지막 수정 날짜
+ 	address TEXT NOT NULL, --문서의 본문이 저장된 위치
+	PRIMARY KEY(doc_id),
+	FOREIGN KEY(owner_id) REFERENCES user(email) ON DELETE SET NULL
+
+
+CREATE TABLE webapp_permission( -- document에 대한 user의 권한
+ 	doc_id CHAR(36),
+ 	user_id VARCHAR(320),
+ 	readable BOOLEAN DEFAULT TRUE, --읽기 가능 여부
+ 	writable BOOLEAN DEFAULT TRUE, --쓰기(편집) 가능 여부
+	PRIMARY KEY(doc_id, user_id),
+	FOREIGN KEY(doc_id) REFERENCES document(doc_id) ON DELETE CASCADE,
+	FOREIGN KEY(user_id) REFERENCES user(email) ON DELETE CASCADE
+);
+--doc_id와 user_id에 해당하는 permission이 존재하지 않을 경우 readable = False, writable = False로 간주
+
+
+------------------------
+필요하다면 이후에 추가 (그룹 별 문서 편집을 위한 테이블)
+
+group
+ - group_id (primary key)
+ - group_name
+
+group_user
+ - group_id (primary key) (foreign key(group_id) references group(group_id))
+ - user_id (primary key) (foreign key(user_id) references User(email))
